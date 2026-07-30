@@ -1,6 +1,8 @@
 #ifndef PIKA_GAME_HPP
 #define PIKA_GAME_HPP
 
+#include <mutex>
+
 #include "pikaball/game_state.hpp"
 #include "pikaball/input.hpp"
 #include "view/intro_view.hpp"
