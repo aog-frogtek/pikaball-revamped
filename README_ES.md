@@ -17,7 +17,7 @@ Este proyecto es una adaptación en C++ del juego original usando SDL3, fuerteme
 
 Esta versión "Revamped" incluye:
 * **Soporte multiplataforma** usando SDL3. Compilado y probado en Windows y Linux.
-* **Ejecutable 100% portable**: todos los recursos están integrados, no se necesitan archivos externos. ¡Igual que el juego original!
+* **Dos opciones de compilación**: una build portable con recursos integrados en el ejecutable (fácil de mover, igual que el juego original) y la versión por defecto con los recursos en un directorio aparte (permite modificar sprites y sonidos).
 * **Sprites especiales** modificados por el equipo de la Murcia LAN Party en 2009.
 
 ## Descarga
@@ -53,7 +53,7 @@ flatpak run io.github.butakus.pikaball
 * Efectos de sonido y música originales.
 * Sprites personalizados de la Murcia LAN Party 2009 (además de algunos nuevos).
 * Soporte multiplataforma (Windows, Linux).
-* Ejecutable único y portable con recursos integrados (no requiere instalación).
+* Dos opciones de build disponibles: Ejecutable portable con recursos integrados y la versión por defecto con los recursos en un directorio aparte para poder modificarlos.
 
 ## Controles
 
@@ -76,73 +76,7 @@ flatpak run io.github.butakus.pikaball
 *El soporte para joystick está planeado para una versión futura.*
 
 ## Compilación (Build)
-
-Si quieres compilar el juego desde fuente, sigue las instrucciones que aparecen a continuación.
-
-El proyecto utiliza *presets* de CMake para facilitar la configuración y compilación en diferentes plataformas.
-Todas las dependencias (SDL3, SDL3_mixer, etc.) están incluidas (*vendored*) y se compilarán automáticamente.
-Todos los recursos del juego (sprites, sonidos, fuentes) se integran directamente en el binario durante la configuración de CMake.
-
-### Requisitos de compilación
-
-* **CMake** 3.25 o superior
-* Sistema de compilación **Ninja**
-* Compilador compatible con **C++23**:
-    * Linux: GCC 13+ o Clang 16+
-    * Windows: MinGW-w64 (GCC 13+)
-
-### Linux
-
-1.  **Clona el repositorio:**
-
-    ```bash
-    git clone https://github.com/butakus/pikaball-revamped.git
-    cd pikaball-revamped
-    ```
-
-2.  **Configura y compila el proyecto:**
-
-    Para compilar en "Release":
-
-    ```bash
-    cmake --preset release
-    cmake --build --preset release
-    ```
-
-    Para compilar en "Debug", cambia el preset a "debug".
-
-El ejecutable se creará en:
-
-* Debug: `build/debug/pikaball_revamped`
-* Release: `build/release/pikaball_revamped`
-
-### Windows (MinGW)
-
-1.  **Prerrequisitos:**
-
-    * Instalar MinGW-w64 con GCC 13 o posterior.
-    * Instalar CMake (3.25+).
-    * Instalar Ninja (el sistema de compilación).
-    * Asegurarse de que el directorio `bin` de MinGW esté en el PATH.
-
-2.  **Clonar el repositorio:**
-
-    ```bash
-    git clone https://github.com/butakus/pikaball-revamped.git
-    cd pikaball-revamped
-    ```
-
-3.  **Configurar y compilar el proyecto:**
-
-    ```bash
-    cmake --preset windows-release
-    cmake --build --preset windows-release
-    ```
-
-El ejecutable se creará en `build/release-win/pikaball_revamped.exe`.
-
-**Nota:** El ejecutable de Windows es totalmente portable y puede ejecutarse en cualquier sistema Windows sin instalar nada.
-Simplemente, copia el archivo `.exe` y ejecútalo.
+Si quieres compilar el juego desde fuente, sigue las instrucciones que aparecen en [docs/BUILDING.md](docs/BUILDING.md).
 
 ## Créditos
 

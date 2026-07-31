@@ -19,7 +19,7 @@ This project is a C++ adaptation of the original game using SDL3, heavily inspir
 
 This "Revamped" version features:
 - **Cross-platform support** using SDL3. Built and tested on Windows and Linux.
-- **Fully self-contained binary** - all resources embedded, no external files needed. Just like the original game!
+- **Two build options**: a portable build with embedded assets (easy to move around, just like the original game) and the default build with assets in a directory (easier to mod and experiment with the game files).
 - **Special sprites** modified by the Murcia LAN Party team in 2009.
 
 ## Download
@@ -48,7 +48,7 @@ You can launch the game by clicking on the icon, or by running this in the termi
 - Original sound effects and music
 - Murcia LAN Party 2009 custom sprites (plus some new ones)
 - Cross-platform support (Windows, Linux)
-- Single portable executable with embedded assets (no installation required)
+- Two build options available: portable embedded-assets builds and the default directory-based assets build for easier modding
 
 ## Controls
 
@@ -68,63 +68,7 @@ You can launch the game by clicking on the icon, or by running this in the termi
 *Joystick support is planned for a future version*.
 
 ## Build
-If you want to build the game yourself, follow the instructions below.
-
-The project uses CMake presets for easy configuration and building across different platforms. All dependencies (SDL3, SDL3_mixer, etc.) are vendored and will be built automatically. All game assets (sprites, sounds, fonts) are embedded directly into the binary during CMake configuration.
-
-### Build Requirements
-- **CMake** 3.25 or higher
-- **Ninja** build system
-- **C++23** compatible compiler:
-   - Linux: GCC 13+ or Clang 16+
-   - Windows: MinGW-w64 (GCC 13+)
-
-### Linux
-
-1. **Clone the repository:**
-   ```bash
-   git clone https://github.com/butakus/pikaball-revamped.git
-   cd pikaball-revamped
-   ```
-
-2. **Configure and build the project:**
-   
-   For a Release build:
-   ```bash
-   cmake --preset release
-   cmake --build --preset release
-   ```
-   
-   For the Debug build, change the preset to "debug".
-
-
-The executable will be located in:
-- Debug: `build/debug/pikaball_revamped`
-- Release: `build/release/pikaball_revamped`
-
-### Windows (MinGW)
-
-1. **Prerequisites:**
-   - Install MinGW-w64 with GCC 13 or later
-   - Install CMake (3.25+)
-   - Install Ninja build system
-   - Ensure MinGW's `bin` directory is in your PATH
-
-2. **Clone the repository:**
-   ```bash
-   git clone https://github.com/butakus/pikaball-revamped.git
-   cd pikaball-revamped
-   ```
-
-3. **Configure and build the project:**
-   ```bash
-   cmake --preset windows-release
-   cmake --build --preset windows-release
-   ```
-
-The executable will be located in `build/release-win/pikaball_revamped.exe`.
-
-**Note:** The Windows executable is fully portable and can be run on any Windows system without installing anything. Just copy the `.exe` file and run it!
+If you want to build the game yourself, follow the instructions in [docs/BUILDING.md](docs/BUILDING.md).
 
 ## Credits
 
