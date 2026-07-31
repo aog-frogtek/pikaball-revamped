@@ -32,29 +32,46 @@ jobs:
         os: [ubuntu-latest, windows-latest]
         build_type: [Release]
         c_compiler: [gcc, clang]
+        pika_embed_assets: [OFF, ON]
         include:
           - os: windows-latest
             c_compiler: gcc
             cpp_compiler: g++
+            pika_embed_assets: OFF
           - os: ubuntu-latest
             c_compiler: gcc
             cpp_compiler: g++
+            pika_embed_assets: OFF
           - os: ubuntu-latest
             c_compiler: clang
             cpp_compiler: clang++
+            pika_embed_assets: OFF
+          - os: windows-latest
+            c_compiler: gcc
+            cpp_compiler: g++
+            pika_embed_assets: ON
+          - os: ubuntu-latest
+            c_compiler: gcc
+            cpp_compiler: g++
+            pika_embed_assets: ON
+          - os: ubuntu-latest
+            c_compiler: clang
+            cpp_compiler: clang++
+            pika_embed_assets: ON
         exclude:
           - os: windows-latest
             c_compiler: clang
 
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v6
 
     - name: Set reusable strings
       # Turn repeated input strings (such as the build output directory) into step outputs. These step outputs can be used throughout the workflow file.
       id: strings
       shell: bash
       run: |
-        echo "build-output-dir=${{ github.workspace }}/build" >> "$GITHUB_OUTPUT"
+        echo "build-output-dir=${{ github.workspace }}/build/${{ matrix.pika_embed_assets == 'ON' && 'embedded' || 'standard' }}" >> "$GITHUB_OUTPUT"
+        echo "install-dir=${{ github.workspace }}/build/${{ matrix.pika_embed_assets == 'ON' && 'embedded' || 'standard' }}/install" >> "$GITHUB_OUTPUT"
 
     - name: Install SDL Dependencies (Linux/Ubuntu)
       # This step only executes when the runner OS is Linux (i.e., ubuntu-latest)
@@ -76,6 +93,7 @@ jobs:
         cmake -G Ninja -B '${{ steps.strings.outputs.build-output-dir }}'
         -DCMAKE_CXX_COMPILER=${{ matrix.cpp_compiler }}
         -DCMAKE_C_COMPILER=${{ matrix.c_compiler }}
+        -DPIKA_EMBED_ASSETS=${{ matrix.pika_embed_assets }}
         -DCMAKE_BUILD_TYPE=${{ matrix.build_type }}
         -S '${{ github.workspace }}'
 
@@ -89,9 +107,28 @@ jobs:
       # Execute tests defined by the CMake configuration. Note that --build-config is needed because the default Windows generator is a multi-config generator (Visual Studio generator).
       # See https://cmake.org/cmake/help/latest/manual/ctest.1.html for more detail
       # run: ctest --build-config ${{ matrix.build_type }}
-    - name: .exe for release
-      uses: actions/upload-artifact@v4
-      if: ${{ success() && runner.os == 'Windows' && matrix.c_compiler == 'gcc' }}
+
+    - name: Install non-embedded release files
+      if: ${{ runner.os == 'Windows' && matrix.c_compiler == 'gcc' && matrix.pika_embed_assets == 'OFF' }}
+      shell: bash
+      run: cmake --install '${{ steps.strings.outputs.build-output-dir }}' --prefix '${{ steps.strings.outputs.install-dir }}'
+
+    - name: Archive non-embedded release
+      if: ${{ runner.os == 'Windows' && matrix.c_compiler == 'gcc' && matrix.pika_embed_assets == 'OFF' }}
+      shell: pwsh
+      run: |
+        Compress-Archive -Path "${{ steps.strings.outputs.install-dir }}\*" -DestinationPath "${{ steps.strings.outputs.build-output-dir }}\pikaball-revamped-non-embedded.zip"
+
+    - name: .exe for portable release
+      uses: actions/upload-artifact@v6
+      if: ${{ success() && runner.os == 'Windows' && matrix.c_compiler == 'gcc' && matrix.pika_embed_assets == 'ON' }}
       with:
         name: pikaball-revamped.exe
         path: '${{ steps.strings.outputs.build-output-dir }}/pikaball_revamped.exe'
+
+    - name: .zip for non-embedded release
+      uses: actions/upload-artifact@v6
+      if: ${{ success() && runner.os == 'Windows' && matrix.c_compiler == 'gcc' && matrix.pika_embed_assets == 'OFF' }}
+      with:
+        name: pikaball-revamped-non-embedded.zip
+        path: '${{ steps.strings.outputs.build-output-dir }}/pikaball-revamped-non-embedded.zip'
