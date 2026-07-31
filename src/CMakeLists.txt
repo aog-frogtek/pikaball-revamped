@@ -39,25 +39,39 @@ target_compile_definitions(${PROJECT_NAME} PRIVATE
         $<$<CONFIG:Debug>:-DPIKA_DEBUG>
 )
 
-# Embed resources into binary using custom version of battery::embed
-include(${CMAKE_SOURCE_DIR}/cmake/pika_embed.cmake)
-pika_embed(${PROJECT_NAME}
-    ${CMAKE_SOURCE_DIR}/assets/images/sprite_sheet.png
-    ${CMAKE_SOURCE_DIR}/assets/sounds/bgm.mp3
-    ${CMAKE_SOURCE_DIR}/assets/sounds/pi.wav
-    ${CMAKE_SOURCE_DIR}/assets/sounds/pika.wav
-    ${CMAKE_SOURCE_DIR}/assets/sounds/chu.wav
-    ${CMAKE_SOURCE_DIR}/assets/sounds/pikachu.wav
-    ${CMAKE_SOURCE_DIR}/assets/sounds/pipikachu.wav
-    ${CMAKE_SOURCE_DIR}/assets/sounds/ball_hit.wav
-    ${CMAKE_SOURCE_DIR}/assets/sounds/ball_ground.wav
-    ${CMAKE_SOURCE_DIR}/assets/font.ttf
-)
+if (PIKA_EMBED_ASSETS)
+    target_compile_definitions(${PROJECT_NAME} PRIVATE PIKA_EMBED_ASSETS)
+
+    # Embed resources into binary using custom version of battery::embed
+    include(${CMAKE_SOURCE_DIR}/cmake/pika_embed.cmake)
+    pika_embed(${PROJECT_NAME}
+        ${CMAKE_SOURCE_DIR}/assets/images/sprite_sheet.png
+        ${CMAKE_SOURCE_DIR}/assets/sounds/bgm.mp3
+        ${CMAKE_SOURCE_DIR}/assets/sounds/pi.wav
+        ${CMAKE_SOURCE_DIR}/assets/sounds/pika.wav
+        ${CMAKE_SOURCE_DIR}/assets/sounds/chu.wav
+        ${CMAKE_SOURCE_DIR}/assets/sounds/pikachu.wav
+        ${CMAKE_SOURCE_DIR}/assets/sounds/pipikachu.wav
+        ${CMAKE_SOURCE_DIR}/assets/sounds/ball_hit.wav
+        ${CMAKE_SOURCE_DIR}/assets/sounds/ball_ground.wav
+        ${CMAKE_SOURCE_DIR}/assets/font.ttf
+    )
+endif()
+
+if (NOT PIKA_ASSETS_RUNTIME_DIR STREQUAL "")
+    target_compile_definitions(${PROJECT_NAME} PRIVATE PIKA_ASSETS_RUNTIME_DIR="${PIKA_ASSETS_RUNTIME_DIR}")
+endif()
 
 # Install targets
 install(TARGETS ${PROJECT_NAME}
-        DESTINATION ${CMAKE_INSTALL_PREFIX}
+    DESTINATION .
 )
+
+if (NOT PIKA_EMBED_ASSETS)
+    install(DIRECTORY ${CMAKE_SOURCE_DIR}/assets/
+            DESTINATION ${PIKA_ASSETS_INSTALL_DIR}
+    )
+endif()
 #install(TARGETS
 #    ${CONTROLLER_BASE_LIB_NAME}
 #    ${KEYBOARD_CONTROLLER_LIB_NAME}

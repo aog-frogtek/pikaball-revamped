@@ -14,7 +14,8 @@
       "binaryDir": "${sourceDir}/build/debug",
       "installDir": "${sourceDir}/build/debug/pikaball-release",
       "cacheVariables": {
-        "CMAKE_BUILD_TYPE": "Debug"
+        "CMAKE_BUILD_TYPE": "Debug",
+        "PIKA_EMBED_ASSETS": "OFF"
       },
       "condition": {
         "type": "notEquals",
@@ -30,7 +31,25 @@
       "binaryDir": "${sourceDir}/build/release",
       "installDir": "${sourceDir}/build/release/pikaball-release",
       "cacheVariables": {
-        "CMAKE_BUILD_TYPE": "Release"
+        "CMAKE_BUILD_TYPE": "Release",
+        "PIKA_EMBED_ASSETS": "OFF"
+      },
+      "condition": {
+        "type": "notEquals",
+        "lhs": "${hostSystemName}",
+        "rhs": "Windows"
+      }
+    },
+    {
+      "name": "release-embedded",
+      "displayName": "Release Embedded Config",
+      "description": "Release build with assets embedded in the executable",
+      "generator": "Ninja",
+      "binaryDir": "${sourceDir}/build/release-embedded",
+      "installDir": "${sourceDir}/build/release-embedded/pikaball-release",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Release",
+        "PIKA_EMBED_ASSETS": "ON"
       },
       "condition": {
         "type": "notEquals",
@@ -46,7 +65,25 @@
       "binaryDir": "${sourceDir}/build/release-win",
       "installDir": "${sourceDir}/build/release-win/pikaball-release",
       "cacheVariables": {
-        "CMAKE_BUILD_TYPE": "Release"
+        "CMAKE_BUILD_TYPE": "Release",
+        "PIKA_EMBED_ASSETS": "OFF"
+      },
+      "condition": {
+        "type": "equals",
+        "lhs": "${hostSystemName}",
+        "rhs": "Windows"
+      }
+    },
+    {
+      "name": "windows-release-embedded",
+      "displayName": "Windows Release Embedded configuration",
+      "description": "Windows release build with assets embedded",
+      "generator": "Ninja",
+      "binaryDir": "${sourceDir}/build/release-win-embedded",
+      "installDir": "${sourceDir}/build/release-win-embedded/pikaball-release",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Release",
+        "PIKA_EMBED_ASSETS": "ON"
       },
       "condition": {
         "type": "equals",
@@ -69,10 +106,22 @@
       "configuration": "Release"
     },
     {
+      "name": "release-embedded",
+      "displayName": "Release Embedded Build",
+      "configurePreset": "release-embedded",
+      "configuration": "Release"
+    },
+    {
       "name": "windows-release",
       "displayName": "Release Build",
       "configurePreset": "windows-release",
       "configuration": "Windows Release"
+    },
+    {
+      "name": "windows-release-embedded",
+      "displayName": "Windows Release Embedded Build",
+      "configurePreset": "windows-release-embedded",
+      "configuration": "Windows Release Embedded"
     }
   ]
 }

@@ -1,8 +1,15 @@
 #ifndef PIKA_RESOURCES_HPP
 #define PIKA_RESOURCES_HPP
 
+#include <filesystem>
+#include <cstddef>
+#include <string>
+#include "SDL3/SDL.h"
+
+#ifdef PIKA_EMBED_ASSETS
 #include <array>
 #include "battery/pika_embed.hpp"
+#endif
 
 namespace pika {
 
@@ -20,6 +27,7 @@ static constexpr char text_font_filename [] = "assets/font.ttf";
 
 static constexpr unsigned int text_font_size = 45;
 
+#ifdef PIKA_EMBED_ASSETS
 namespace embed {
 
 static const std::array<pika::b::EmbedInternal::EmbeddedFile, 10> resource_list {
@@ -38,6 +46,28 @@ static const std::array<pika::b::EmbedInternal::EmbeddedFile, 10> resource_list 
 };
 
 } // namespace pika::embed
+#endif
+
+inline std::string build_resource_path(const char* filename) {
+#ifdef PIKA_ASSETS_RUNTIME_DIR
+  std::string runtime_dir = PIKA_ASSETS_RUNTIME_DIR;
+  std::string relative_path = filename;
+  static constexpr const char* prefix = "assets/";
+  static constexpr std::size_t prefix_size = 7;
+  if (relative_path.compare(0, prefix_size, prefix) == 0) {
+    relative_path.erase(0, prefix_size);
+  }
+  std::filesystem::path full_path = std::filesystem::path(runtime_dir) / relative_path;
+  return full_path.lexically_normal().string();
+#else
+  const char* base_path = SDL_GetBasePath();
+  if (base_path != nullptr) {
+    const std::filesystem::path full_path = std::filesystem::path(base_path) / filename;
+    return full_path.lexically_normal().string();
+  }
+  return filename;
+#endif
+}
 
 /**
  * Load a game resource. First try to load it from the binary embedded data.
@@ -51,6 +81,8 @@ static const std::array<pika::b::EmbedInternal::EmbeddedFile, 10> resource_list 
  */
 inline SDL_IOStream* load_resource(const char* filename) {
   SDL_IOStream* resource_data = nullptr;
+
+#ifdef PIKA_EMBED_ASSETS
   for (const auto & res : embed::resource_list) {
     if (res.filename() == filename) {
       SDL_Log("Loading embedded %s | %zu bytes", filename, res.size());
@@ -58,12 +90,14 @@ inline SDL_IOStream* load_resource(const char* filename) {
       break;
     }
   }
+#endif
 
   if (resource_data == nullptr) {
-    SDL_Log("Could not load resource %s from embedded data. Loading from file...", filename);
-    resource_data = SDL_IOFromFile(filename, "r");
+    const std::string resource_path = build_resource_path(filename);
+    SDL_Log("Loading resource from file: %s", resource_path.c_str());
+    resource_data = SDL_IOFromFile(resource_path.c_str(), "r");
     if (resource_data == nullptr) {
-      SDL_Log( "Unable to load resource %s! SDL Error: %s\n", filename, SDL_GetError());
+      SDL_Log("Unable to load resource %s (%s)! SDL Error: %s\n", filename, resource_path.c_str(), SDL_GetError());
       throw std::runtime_error("Failed to load resource!");
     }
   }
