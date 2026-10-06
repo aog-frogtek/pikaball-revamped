@@ -1,7 +1,8 @@
 #ifndef PIKA_FPS_VIEW_HPP
 #define PIKA_FPS_VIEW_HPP
 
-#include <format>
+#include <cstdio>
+#include <string>
 
 #include "SDL3_ttf/SDL_ttf.h"
 #include "pikaball/common.hpp"
@@ -62,7 +63,10 @@ public:
     SDL_RenderTexture(renderer_, background_texture_.get(), nullptr, &background_dst);
 
     // Render FPS value
-    const std::string fps_str = std::format("{:.1f}", fps);
+    // snprintf instead of std::format: libc++ only ships floating-point formatting from macOS 13.3
+    char fps_buf[16];
+    std::snprintf(fps_buf, sizeof(fps_buf), "%.1f", fps);
+    const std::string fps_str {fps_buf};
     const auto fps_texture = FPSView::load_text_texture(renderer_, text_font_, fps_str);
     SDL_RenderTexture(renderer_, fps_texture.get(), nullptr, &fps_dst);
 
