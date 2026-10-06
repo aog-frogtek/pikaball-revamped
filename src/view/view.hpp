@@ -1,6 +1,7 @@
 #ifndef PIKA_VIEW_HPP
 #define PIKA_VIEW_HPP
 
+#include <algorithm>
 #include <memory>
 #include <SDL3/SDL_render.h>
 #include <pikaball/common.hpp>
